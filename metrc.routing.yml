@@ -1,0 +1,14 @@
+metrc.application_settings:
+  path: '/admin/config/services/metrc'
+  defaults:
+    _form: 'Drupal\metrc\Form\ApplicationSettings'
+    _title: 'Metrc Application Settings'
+  requirements:
+    _permission: 'administer site configuration'
+metrc.authorization:
+  path: '/metrc-authorization'
+  defaults:
+    _controller: 'Drupal\metrc\Controller\Authorization::authorize'
+    _title: 'Metrc authorization'
+  requirements:
+    _custom_access: 'Drupal\metrc\Controller\Authorization:checkAccess'

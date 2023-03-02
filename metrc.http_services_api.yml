@@ -1,0 +1,6 @@
+metrcs_services.contents:
+  title: "Metrcs Api"
+  api_path: "src/Api/metrcs_services.yml"
+  config:
+    base_uri: "https://sandbox-api-co.metrc.com"
+    debug: "/tmp/http.log"  

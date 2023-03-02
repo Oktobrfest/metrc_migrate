@@ -1,0 +1,42 @@
+<?php
+/**
+ * @file
+ * Install and update hooks.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function metrc_schema() {
+  $schema['metrc_user_keys'] = [
+    'description' => 'Storage of metrc user access tokens.',
+    'fields' => [
+      'uid' => [
+        'description' => 'The {users}.uid that read the {node} nid.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'user_key' => [
+        'description' => 'Access token required for fetching user data from the metrc API.',
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big',
+      ],
+      'created' => [
+        'description' => 'Unix timestamp when this access token expires.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'metrc_uid' => [
+        'description' => 'Metrc user id.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => array('uid'),
+  ];
+
+  return $schema;
+}

@@ -1,0 +1,237 @@
+id: package_revisions
+label: '14.b. PACKAGE REVISIONS- Active & Inactive'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  data_fetcher_plugin: metrc_http
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  
+  path: /packages/v1
+  by_type: date
+  statuses: 
+    - active
+    - inactive
+  
+  item_selector: /
+  
+  #revisions only
+  log_msg: 'Updated by Migrations: 14.b PACKAGE REVISIONS'
+  track_changes: true
+
+
+  fields:
+    -
+      name: Id
+      label: 'Package Id'
+      selector: Id
+    -
+      name: Label
+      label: 'Label'
+      selector: Label
+    -
+      name: Quantity
+      label: 'Quantity'
+      selector: Quantity
+    -
+      name: ItemId
+      label: 'Item Id Number'
+      selector: Item/Id
+    -
+      name: PackagedDate
+      label: 'Packaged Date'
+      selector: PackagedDate
+    -
+      name: LabTestingState
+      label: 'Lab Testing State'
+      selector: LabTestingState
+    -
+      name: Note
+      label: 'Note'
+      selector: Note
+    -
+      name: LastModified
+      label: 'Last Modified'
+      selector: LastModified
+    -
+      name: SourceHarvestNames
+      label: 'SourceHarvestNames'
+      selector: SourceHarvestNames
+    - 
+      name: LabTestingStateDate
+      label: 'Lab Testing State Date'
+      selector: LabTestingStateDate
+    -
+      name: InitialLabTestingState
+      label: 'Initial Lab Testing State'
+      selector: InitialLabTestingState
+    -
+      name: ArchivedDate
+      label: 'Archived Date'
+      selector: ArchivedDate
+    -
+      name: FinishedDate
+      label: 'Finished Date'
+      selector: FinishedDate  
+    -
+      name: IsTestingSample
+      label: 'Is this a Testing Sample'
+      selector: IsTestingSample    
+    -
+      name: UnitThcPercent
+      label: 'The THC of the ITEM- UnitThcPercent'
+      selector: Item/UnitThcPercent  
+    -
+      name: ProductCategoryName
+      label: 'Product Category Name- ie. Item Type'
+      selector: Item/ProductCategoryName
+    -
+      name: StrainId
+      label: 'Metrc Strain Id'
+      selector: Item/StrainId
+    -
+      name: StrainName
+      label: 'Strain Name'
+      selector: Item/StrainName 
+    -
+      name: ItemName
+      label: 'Item Name'
+      selector: Item/Name
+    -
+      name: ProductCategoryType
+      label: 'Product Category Type- NOT Item Type, some random category they made up'
+      selector: Item/ProductCategoryType 
+    -
+      name: PackageState
+      label: 'PackageState- Active or Inactive'
+      selector: PackageState
+    -
+      name: Published
+      label: 'Published- True or False'
+      selector: Published 
+    -
+      name: UrlLicenseNumber
+      label: 'Facility License Number from URL'
+      selector: UrlLicenseNumber
+    
+
+  ids:
+    Id:
+      type: integer
+process:
+  nid: Id
+  title: Label
+  field_quantity: Quantity
+  field_packaged_date: 
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: PackagedDate
+  field_note: Note
+  field_last_modified: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: LastModified
+  field_sourceharvestnames:
+    plugin: entity_lookup
+    access_check: false
+    source: SourceHarvestNames
+    value_key: name
+    bundle_key: vid
+    bundle: harvests
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_lab_testing_state: LabTestingState
+  field_lab_testing_state_date:
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: LabTestingStateDate
+  field_initial_lab_testing_state: InitialLabTestingState
+  field_archived_date:
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: ArchivedDate
+  field_finished_date:
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: FinishedDate
+  field_is_testing_sample: IsTestingSample 
+  field_located:
+    plugin: entity_lookup
+    access_check: false
+    source: UrlLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true
+  field_package_metrc_id: Id
+  field_item_unit_thc_percent: UnitThcPercent
+  field_category:
+    plugin: entity_lookup
+    access_check: false
+    source: ProductCategoryName
+    value_key: name
+    bundle_key: vid
+    bundle: item_type
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_strain_name: StrainName
+  field_item_name: ItemName
+  field_strain:
+    plugin: entity_lookup
+    source: StrainName
+    access_check: false
+    value_key: name
+    bundle_key: vid
+    bundle: strain
+    entity_type: taxonomy_term
+    ignore_case: true
+  status: Published
+  field_package_state:
+    plugin: package_state
+    source: PackageState
+  field_item:
+    plugin: entity_lookup
+    source: ItemName
+    access_check: false
+    value_key: name
+    bundle_key: vid
+    bundle: item
+    entity_type: taxonomy_term
+    ignore_case: true
+  
+  # revision stuff goes below here
+  revision_log: log_msg
+  revision_timestamp: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'U'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: LastModified
+
+destination:
+  plugin: metrc_entity_revision:node
+  default_bundle: package
+migration_dependencies: {}

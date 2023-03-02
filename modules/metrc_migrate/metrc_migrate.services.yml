@@ -1,0 +1,17 @@
+services:
+  plugin.manager.metrc_migrate.authentication:
+    class: Drupal\metrc_migrate\AuthenticationPluginManager
+    parent: default_plugin_manager
+  plugin.manager.metrc_migrate.data_fetcher:
+    class: Drupal\metrc_migrate\DataFetcherPluginManager
+    parent: default_plugin_manager
+  metrc_migrate.controller_alter:
+    class: Drupal\metrc_migrate\EventSubscriber\MetrcControllerAlterSubscriber
+    arguments: []
+    tags:
+      - { name: event_subscriber }
+  plugin.manager.metrc_migrate.data_parser:
+    class: Drupal\metrc_migrate\DataParserPluginManager
+    parent: default_plugin_manager
+
+

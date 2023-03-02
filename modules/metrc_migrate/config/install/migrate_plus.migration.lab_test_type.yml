@@ -1,0 +1,46 @@
+id: lab_test_type
+label: '1.c. Lab Test Types'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: json
+  authentication:
+    plugin: basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  # One or more URLs from which to fetch the source data.
+  path: /labtests/v1/types
+  by_type: default
+  item_selector: /
+  
+  fields:
+    -
+      name: Name
+      label: Name
+      selector: Name
+    -
+      name: Id
+      label: Id
+      selector: Id
+  ids:
+    Id:
+      type: integer
+process:
+  vid:
+    plugin: default_value
+    default_value: lab_test_type
+  tid: Id
+  name: Name
+  description: Name
+  field_lab_test_type_id: Id
+destination:
+  plugin: entity:taxonomy_term
+migration_dependencies: {}
+

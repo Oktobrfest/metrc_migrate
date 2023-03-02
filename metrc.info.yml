@@ -1,0 +1,15 @@
+name: Metrc
+type: module
+description: Metrc API wrapper module for connecting to Metrc.
+core_version_requirement: ^8 || ^9
+version: 1.0
+package: Metrc
+project: 'gitlab.com/sun_dweller/metrc_migrate'
+dependencies:
+  - drupal:migrate
+  - drupal:entity_reference_revisionss
+test_dependencies:
+  - migrate_plus:migrate_plus
+  - migrate_source_csv:migrate_source_csv (>=8.x-3.0)
+  - migrate_tools:migrate_tools
+  

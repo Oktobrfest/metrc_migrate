@@ -1,0 +1,160 @@
+id: delivered_packages
+label: '13.c PACKAGES- Delivered'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_deliveries
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: metrc_http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  
+  path: /transfers/v1/delivery
+  appends: 
+    - packages
+  
+  item_selector: /
+
+  entity_generate_notice: 'Created by Migration: 13.c delivered_packages->entity_generate plugin!'
+
+  fields:
+    -
+      name: PackageId
+      label: 'Package Id'
+      selector: PackageId
+    -
+      name: PackageLabel
+      label: 'Package Label'
+      selector: PackageLabel
+    -
+      name: ShippedQuantity
+      label: 'Shipped Quantity'
+      selector: ShippedQuantity
+    -
+      name: ItemName
+      label: 'Item Name'
+      selector: ItemName
+    -
+      name: ShipmentPackageState
+      label: 'Shipment Package State- accepted or rejected, etc'
+      selector: ShipmentPackageState
+    -
+      name: IsTestingSample
+      label: 'Is this a Testing Sample'
+      selector: IsTestingSample
+    -
+      name: LabTestingState
+      label: 'Lab Testing State'
+      selector: LabTestingState
+    -
+      name: TransferId
+      label: 'Transfer Id'
+      selector: TransferId  
+    -
+      name: Published
+      label: 'Set in Metrc_Json, if active make it Published'
+      selector: Published  
+    -
+      name: ItemUnitThcPercent
+      label: 'Item Unit Thc Percent'
+      selector: ItemUnitThcPercent
+    -
+      name: ItemStrainName
+      label: 'Item Strain Name'
+      selector: ItemStrainName
+    -
+      name: ItemCategoryName
+      label: 'Product Category Name'
+      selector: ItemCategoryName    
+    -
+      name: SourceHarvestNames
+      label: 'Source Harvest Names'
+      selector: SourceHarvestNames    
+  
+  ids:
+    PackageId:
+      type: integer
+process:
+  nid:
+    -
+      plugin: skip_existing
+      source: PackageId
+      entity_type: node
+    -       
+      plugin: get
+      source: PackageId
+  
+  title: PackageLabel
+  field_quantity: ShippedQuantity
+  field_item_name: ItemName
+  field_item_unit_thc_percent: ItemUnitThcPercent
+  field_sourceharvestnames:
+    plugin: entity_lookup
+    access_check: false
+    source: SourceHarvestNames
+    value_key: name
+    bundle_key: vid
+    bundle: harvests
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_package_state: ShipmentPackageState
+  field_is_testing_sample: IsTestingSample
+  field_lab_testing_state: LabTestingState
+  field_located: 
+    plugin: entity_lookup
+    access_check: false
+    source: TransferId
+    value_key: nid
+    bundle_key: type
+    bundle: delivery
+    entity_type: node
+    ignore_case: true
+  status: Published
+  field_package_metrc_id: PackageId
+  field_strain_name: ItemStrainName
+  field_category:
+    plugin: migration_lookup
+    migration: item_type
+    source: ItemCategoryName
+  field_strain:
+    plugin: entity_generate
+    source: ItemStrainName
+    access_check: false
+    value_key: name
+    bundle_key: vid
+    bundle: strain
+    entity_type: taxonomy_term
+    ignore_case: true
+    values:
+      name: ItemStrainName
+      field_genetics: entity_generate_notice
+      field_located: '@field_located'
+  field_item:
+    plugin: entity_generate
+    source: ItemName
+    access_check: false
+    value_key: name
+    bundle_key: vid
+    bundle: item
+    entity_type: taxonomy_term
+    ignore_case: true
+    values:
+      name: ItemName
+      field_approval_status: entity_generate_notice
+      field_located: '@field_located'
+      field_thc_percent: ItemUnitThcPercent
+      field_product_category_name: ItemCategoryName
+      field_strainname: ItemStrainName
+      field_strain: '@field_strain'
+      field_item_type: '@field_category'  
+
+destination:
+  plugin: entity:node
+  default_bundle: package
+migration_dependencies: {}

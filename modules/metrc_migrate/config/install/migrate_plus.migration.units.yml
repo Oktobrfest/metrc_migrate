@@ -1,0 +1,50 @@
+id: units
+label: '1.d. Units of Measure'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: json
+  authentication:
+    plugin: basic
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  # One or more URLs from which to fetch the source data.
+  path: /unitsofmeasure/v1
+  by_type: default
+  statuses:
+    - active
+  item_selector: /
+  
+  fields:
+    -
+      name: Name
+      label: Name
+      selector: Name
+    -
+      name: QuantityType
+      label: Quantity Type
+      selector: QuantityType
+    -
+      name: Abbreviation
+      label: Abbreviation
+      selector: Abbreviation
+  ids:
+    Name:
+      type: string
+process:
+  vid:
+    plugin: default_value
+    default_value: units
+  name: Name
+  field_quantity_type: QuantityType
+  field_abbreviation: Abbreviation
+destination:
+  plugin: entity:taxonomy_term
+migration_dependencies: {}
+

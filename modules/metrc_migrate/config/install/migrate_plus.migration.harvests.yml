@@ -1,0 +1,224 @@
+id: harvests
+label: '6. Harvests- Active & Inactive'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  data_fetcher_plugin: metrc_http
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+ 
+  path: /harvests/v1
+  by_type: date
+  statuses:
+    - active
+    - inactive
+    
+  item_selector: /
+  track_changes: true
+
+  fields:
+    -
+      name: Id
+      label: 'Harvest Id'
+      selector: Id
+    -
+      name: Name
+      label: 'Name'
+      selector: Name
+    -
+      name: SourceStrainNames
+      label: 'SourceStrainNames'
+      selector: SourceStrainNames
+    -
+      name: HarvestType
+      label: 'Harvest Type'
+      selector: HarvestType
+    -
+      name: CurrentWeight
+      label: 'Current Weight'
+      selector: CurrentWeight
+    -
+      name: TotalWasteWeight
+      label: 'Total Waste Weight'
+      selector: TotalWasteWeight
+    -
+      name: PlantCount
+      label: 'Plant Count'
+      selector: PlantCount
+    -
+      name: TotalWetWeight
+      label: 'Total Wet Weight'
+      selector: TotalWetWeight
+    -
+      name: TotalRestoredWeight
+      label: 'Total Restored Weight'
+      selector: TotalRestoredWeight
+    -
+      name: PackageCount
+      label: 'Package Count'
+      selector: PackageCount
+    -
+      name: TotalPackagedWeight
+      label: 'Total Package Weight'
+      selector: TotalPackagedWeight
+    -
+      name: UnitOfWeightName
+      label: 'Unit of Weight'
+      selector: UnitOfWeightName
+    -
+      name: LabTestingState
+      label: 'Lab Testing State'
+      selector: LabTestingState
+    -
+      name: LabTestingStateDate
+      label: 'Lab Testing Start Date'
+      selector: LabTestingStateDate
+    -
+      name: IsOnHold
+      label: 'Is On Hold'
+      selector: IsOnHold
+    -
+      name: HarvestStartDate
+      label: 'Harvest Start Date'
+      selector: HarvestStartDate
+    -
+      name: FinishedDate
+      label: 'Harvest Finished Date'
+      selector: FinishedDate
+    -
+      name: ArchivedDate
+      label: 'Harvest Archived Date'
+      selector: ArchivedDate
+    -
+      name: LastModified
+      label: 'Last Modified'
+      selector: LastModified
+    -
+      name: HarvestState
+      label: 'Harvest State- Active or Inactive'
+      selector: HarvestState
+    -
+      name: UrlLicenseNumber
+      label: 'Facility License Number from URL'
+      selector: UrlLicenseNumber
+    -
+      name: DryingLocationId
+      label: 'Drying Location Id- not facility number'
+      selector: DryingLocationId  
+    -
+      name: DryingLocationName
+      label: 'Drying Location Name- not facility name'
+      selector: DryingLocationName  
+    -
+      name: DryingLocationTypeName
+      label: 'Drying Location Type Name'
+      selector: DryingLocationTypeName  
+    -
+      name: SourceStrainCount
+      label: 'Source Strain Count'
+      selector: SourceStrainCount 
+
+
+
+  ids:
+    Id:
+      type: integer
+process:
+  vid:
+    plugin: default_value
+    default_value: harvests
+  field_metrc_harvest_id: Id
+  tid: Id
+  name: Name
+  field_current_weight: CurrentWeight
+  field_harvest_archived_date: 
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: ArchivedDate
+  field_finish_date: 
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: FinishedDate
+  field_harvest_start_date: 
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: HarvestStartDate
+  field_harvest_type: HarvestType
+  field_is_on_hold: IsOnHold
+  field_lab_testing_state: LabTestingState
+  field_lab_testing_state_date: 
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: LabTestingStateDate
+  field_last_modified: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: LastModified
+  field_package_count: PackageCount
+  field_plant_count: PlantCount
+  field_total_packaged_weight: TotalPackagedWeight
+  field_total_restored_weight: TotalRestoredWeight
+  field_total_waste_weight: TotalWasteWeight
+  field_total_wet_weight: TotalWetWeight
+  field_unit_of_weight_name: 
+    plugin: migration_lookup
+    migration: units
+    source: UnitOfWeightName
+  field_lab_results:
+   source: prepare_multiple_paragraphs
+   plugin: sub_process
+   process:
+     target_id: target_id
+     target_revision_id: target_revision_id  
+  field_located:
+    plugin: entity_lookup
+    access_check: false
+    source: UrlLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true
+  field_source_strain_names: 
+    plugin: entity_lookup
+    source: SourceStrainNames
+    access_check: false
+    value_key: name
+    bundle_key: vid
+    bundle: strain
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_harvest_state: HarvestState
+  field_drying_location_id: DryingLocationId
+  field_drying_location_name: DryingLocationName
+  field_drying_location_type_name: DryingLocationTypeName
+  field_source_strain_count: SourceStrainCount
+  field_strain_names: SourceStrainNames
+    
+destination:
+  plugin: entity:taxonomy_term
+migration_dependencies: {}
+
+

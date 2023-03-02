@@ -1,0 +1,126 @@
+id: lab_test
+label: '8. Lab Test Results'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  data_fetcher_plugin: metrc_http
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  path: /labtests/v1/results
+  by_type: lab_test
+  item_selector: /
+
+  fields:
+    -
+      name: LabTestResultId
+      label: 'Lab Test Id'
+      selector: LabTestResultId
+    -
+      name: LabFacilityLicenseNumber
+      label: 'Lab License Number'
+      selector: LabFacilityLicenseNumber
+    -
+      name: LabFacilityName
+      label: 'Lab Name'
+      selector: LabFacilityName
+    -
+      name: OverallPassed
+      label: 'Overall Passed'
+      selector: OverallPassed
+    -
+      name: TestPassed
+      label: 'Test Passed'
+      selector: TestPassed
+    -  
+      name: TestTypeName
+      label: 'Lab Test Type'
+      selector: TestTypeName
+    -
+      name: PackageId
+      label: 'Package ID'
+      selector: PackageId
+    -
+      name: TestResultLevel
+      label: 'Test Result Level'
+      selector: TestResultLevel
+    -
+      name: TestPerformedDate
+      label: 'Test Performed Date'
+      selector: TestPerformedDate
+    -
+      name: ResultReleaseDateTime
+      label: 'Result Release Date and Time'
+      selector: ResultReleaseDateTime
+    -
+      name: TestComment
+      label: 'Lab Test Comment'
+      selector: TestComment
+    -
+      name: TestInformationalOnly
+      label: 'Test Informational Only'
+      selector: TestInformationalOnly
+
+  ids:
+    LabTestResultId:
+      type: integer
+    TestTypeName:
+      type: string
+   
+process:
+  field_test_type_name: 
+    plugin: entity_lookup
+    access_check: false
+    source: TestTypeName
+    value_key: name
+    bundle_key: vid
+    bundle: lab_test_type
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_tested_by:
+    plugin: entity_lookup
+    access_check: false
+    source: LabFacilityLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true
+  field_lab_facility_name: LabFacilityName
+  field_overall_passed: OverallPassed
+  field_test_passed: TestPassed
+  field_harvest:
+    plugin: entity_value
+    source: PackageId
+    entity_type: node
+    langcode: en
+    field_name: field_sourceharvestnames
+  field_test_performed_date: 
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y-m-d'
+    from_timezone: 'America/Denver'
+    to_timezone: 'America/Denver'
+    source: TestPerformedDate
+  field_test_result_level: TestResultLevel
+  field_test_comment: TestComment
+  field_test_informational_only: TestInformationalOnly
+  field_lab_test_result_id: LabTestResultId
+  field_result_release_datetime: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: ResultReleaseDateTime
+
+destination:
+  plugin: 'entity_reference_revisions:paragraph'
+  default_bundle: lab_test
+migration_dependencies: {}

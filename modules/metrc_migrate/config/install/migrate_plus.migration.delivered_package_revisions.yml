@@ -1,0 +1,143 @@
+id: delivered_package_revisions
+label: '14.a. PACKAGE REVISIONS- Delivered Package Revisions'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_deliveries
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: metrc_http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  
+  path: /transfers/v1/delivery
+  appends: 
+    - packages
+  item_selector: /
+
+  # Revisions Stuff
+  track_changes: true
+  log_msg: 'Revision Made By Migration: (14.a. PACKAGE REVISIONS- Delivered)'
+ 
+
+  fields:
+    -
+      name: PackageId
+      label: 'Package Id'
+      selector: PackageId
+    -
+      name: PackageLabel
+      label: 'Package Label'
+      selector: PackageLabel
+    -
+      name: ShippedQuantity
+      label: 'Shipped Quantity'
+      selector: ShippedQuantity
+    -
+      name: ItemName
+      label: 'Item Name'
+      selector: ItemName
+    -
+      name: ShipmentPackageState
+      label: 'Shipment Package State- accepted or rejected, etc'
+      selector: ShipmentPackageState
+    -
+      name: IsTestingSample
+      label: 'Is this a Testing Sample'
+      selector: IsTestingSample
+    -
+      name: LabTestingState
+      label: 'Lab Testing State'
+      selector: LabTestingState
+    -
+      name: Published
+      label: 'Set in Metrc_Json, if active make it Published'
+      selector: Published  
+    -
+      name: ItemUnitThcPercent
+      label: 'Item Unit Thc Percent'
+      selector: ItemUnitThcPercent
+    -
+      name: TransferId
+      label: 'Transfer Id'
+      selector: TransferId  
+    -
+      name: ItemStrainName
+      label: 'Item Strain Name'
+      selector: ItemStrainName
+    -
+      name: ItemCategoryName
+      label: 'Product Category Name'
+      selector: ItemCategoryName    
+    -
+      name: SourceHarvestNames
+      label: 'Source Harvest Names'
+      selector: SourceHarvestNames
+ 
+  ids:
+    PackageId:
+      type: integer
+process:
+  nid: PackageId
+  title: PackageLabel
+  field_quantity: ShippedQuantity
+  field_item: 
+    plugin: entity_lookup
+    access_check: false
+    source: ItemName
+    value_key: name
+    bundle_key: vid
+    bundle: item
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_item_name: ItemName
+  field_item_unit_thc_percent: ItemUnitThcPercent
+  field_sourceharvestnames:
+    plugin: entity_lookup
+    access_check: false
+    source: SourceHarvestNames
+    value_key: name
+    bundle_key: vid
+    bundle: harvests
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_package_state: ShipmentPackageState
+  field_is_testing_sample: IsTestingSample
+  field_lab_testing_state: LabTestingState
+  field_located: 
+    plugin: entity_lookup
+    access_check: false
+    source: TransferId
+    value_key: nid
+    bundle_key: type
+    bundle: delivery
+    entity_type: node
+    ignore_case: true
+  status: Published
+  field_package_metrc_id: PackageId
+  field_strain:
+    plugin: entity_lookup
+    source: ItemStrainName
+    access_check: false
+    value_key: name
+    bundle_key: vid
+    bundle: strain
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_strain_name: ItemStrainName
+  field_category:
+    plugin: migration_lookup
+    migration: item_type
+    source: ItemCategoryName
+ # Revisions Stuff
+  revision_log: log_msg
+ 
+destination:
+  plugin: metrc_entity_revision:node
+  default_bundle: package
+migration_dependencies: {}

@@ -1,0 +1,4 @@
+services:
+  plugin.manager.metrc_base_table_endpoints:
+    class: Drupal\metrc_views\MetrcBaseTableEndpointPluginManager
+    parent: default_plugin_manager

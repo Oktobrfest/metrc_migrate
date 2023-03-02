@@ -1,0 +1,39 @@
+id: lab_allocation
+label: '9. Allocate Lab Tests to Harvests'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: lab_allocation
+  item_selector: /
+  track_changes: true
+
+  fields:
+    -
+      tid: ''
+      field_lab_results: ''
+      thc: ''
+
+  ids:
+    tid:
+      type: integer
+   
+process:
+  vid:
+    plugin: default_value
+    default_value: harvests
+  tid: tid
+  field_top_thc_percent: thc
+  field_lab_results:
+    source: field_lab_results
+    plugin: sub_process
+    process:
+      target_id: target_id
+      target_revision_id: target_revision_id  
+  
+destination:
+  plugin: entity:taxonomy_term
+migration_dependencies: {}
+
+
+

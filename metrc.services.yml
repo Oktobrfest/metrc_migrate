@@ -1,0 +1,10 @@
+services:
+  metrc.user_key_manager:
+    class: Drupal\metrc\MetrcUserKeyManager
+    arguments: ['@database', '@metrc.client']
+  metrc.client:
+    class: Drupal\metrc\MetrcClient
+    factory: metrc.client_factory:create
+    arguments: ['@config.factory']
+  metrc.client_factory:
+    class: Drupal\metrc\MetrcClientFactory

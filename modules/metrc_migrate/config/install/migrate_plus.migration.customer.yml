@@ -1,0 +1,43 @@
+id: customer
+migration_group: metrc
+label: '1.b. businesses CSV migration'
+source:
+  plugin: csv
+  path: '/path_to_csv_file/web/sites/default/files/lic_imports.csv'
+  ids: [LicenseNumber]  
+  purchasing_manager: 'Purchasing Manager'
+
+process:
+  type:
+    plugin: default_value
+    default_value: customer
+  
+  field_license_number:
+    -
+      plugin: skip_existing_license
+      source:  LicenseNumber
+      entity_type: node
+    -      
+      plugin: get
+      source: LicenseNumber
+  title: FacilityName
+  body: comments
+  field_dba: DBA
+  field_customer_city: City
+  field_zip_code: ZipCode
+  field_business_type:
+    plugin: entity_lookup
+    access_check: false
+    source: FacilityType
+    value_key: field_facility_type
+    bundle_key: vid
+    bundle: business_type
+    entity_type: taxonomy_term
+    ignore_case: true
+  field_purchasing_manager_name: purchasing_manager
+  
+destination:
+  plugin: 'entity:node'
+migration_dependencies:
+  required: {  }
+  optional: {  }

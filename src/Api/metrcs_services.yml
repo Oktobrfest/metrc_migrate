@@ -1,0 +1,5 @@
+name: "Metrcs Api Service"
+apiVersion: "1.0"
+description: "Client wrapper for the Metrcs Api service"
+imports:
+  - "resources/packages.yml"

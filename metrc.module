@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Contains metrc.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function metrc_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the metrc module.
+    case 'help.page.metrc':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Metrc API wrapper module for connecting to metrc.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function metrc_theme($existing, $type, $theme, $path) {
+  $items = [];
+
+  $items['metrc_badge'] = [
+    'variables' => [
+      'raw_badge' => NULL,
+      'image' => NULL,
+    ],
+  ];
+
+  return $items;
+}
+
+/**
+ * Template preprocessor for metrc_badge.
+ *
+ * @param $variables
+ */
+function template_preprocess_metrc_badge(&$variables) {
+  $raw_badge = $variables['raw_badge'];
+
+  $variables['image'] = [
+    '#theme' => 'image',
+    '#uri' => $variables['image'],
+    '#alt' => $raw_badge['name'],
+  ];
+
+  $variables['name'] = $raw_badge['name'];
+}

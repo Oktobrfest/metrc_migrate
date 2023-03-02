@@ -1,0 +1,12 @@
+{
+	"name": "drupal/metrc",
+	"type": "drupal-module",
+	"description": "Metrc API wrapper module for connecting to Metrc.",
+	"keywords": ["Drupal"],
+	"license": "GPL-2.0+",
+	"minimum-stability": "dev",
+	"require": {
+		"guzzlehttp/guzzle": "^7.0"
+	}
+  }
+  

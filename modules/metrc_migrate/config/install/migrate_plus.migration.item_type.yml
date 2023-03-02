@@ -1,0 +1,67 @@
+id: item_type
+label: '2. Item Types (aka. Categories / Product Category Name)'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: json
+  authentication:
+    plugin: basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  # One or more URLs from which to fetch the source data.
+  path: /items/v1/categories
+  by_type: default
+  item_selector: /
+  lic: 403R-01160
+  
+  constants:
+    category: Category 
+
+  fields:
+    -
+      name: Name
+      label: 'Name'
+      selector: Name
+    -
+      name: ProductCategoryType
+      label: 'Product Category Type'
+      selector: ProductCategoryType
+    -
+      name: QuantityType
+      label: 'Quantity Type'
+      selector: QuantityType
+  ids:
+    Name:
+      type: string
+process:
+  vid:
+    plugin: default_value
+    default_value: item_type
+  name: Name
+  description: ProductCategoryType
+  field_unit_quantity_type: 
+    plugin: migration_lookup
+    migration: units
+    source: QuantityType
+  field_located:
+    plugin: entity_lookup
+    access_check: false
+    source: lic
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true
+
+
+destination:
+  plugin: entity:taxonomy_term
+migration_dependencies: {}
+

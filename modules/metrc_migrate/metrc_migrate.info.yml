@@ -1,0 +1,10 @@
+name: Metrc Migrate
+type: module
+description: Migration from Metrc
+core_version_requirement: ^8 || ^9
+version: 1.1
+package: Metrc
+dependencies:
+  - metrc
+  - drupal:migrate
+  - migrate_plus:migrate_plus

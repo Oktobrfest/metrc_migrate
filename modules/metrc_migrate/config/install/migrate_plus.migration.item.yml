@@ -1,0 +1,144 @@
+id: item
+label: '5. Items (ie. DD- Flower, etc)'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  data_fetcher_plugin: metrc_http
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  
+  path: /items/v1
+  by_type: default
+  statuses:
+    - active
+
+  item_selector: /
+  lic: 403R-01160
+
+  track_changes: true
+  entity_generate_notice: 'Created by Migration: 5. Items->entity_generate plugin! Fill in leftover fields!'
+
+  fields:
+    -
+      name: Id
+      label: 'Id'
+      selector: Id
+    -
+      name: Name
+      label: 'Name'
+      selector: Name
+    -
+      name: ProductCategoryName
+      label: 'Product Category Name'
+      selector: ProductCategoryName
+    -
+      name: UnitOfMeasureName
+      label: 'Unit Of Measure Name'
+      selector: UnitOfMeasureName
+    -
+      name: StrainName
+      label: 'Strain Name'
+      selector: StrainName
+    -
+      name: ApprovalStatus
+      label: 'Approval Status'
+      selector: ApprovalStatus
+    -
+      name: ApprovalStatusDateTime
+      label: 'Approval Status Date and Time'
+      selector: ApprovalStatusDateTime
+    -
+      name: IsUsed
+      label: 'Is Used'
+      selector: IsUsed
+    -
+      name: UnitThcPercent
+      label: 'Unit THC Percent'
+      selector: UnitThcPercent
+    -
+      name: StrainId
+      label: 'Strain ID'
+      selector: StrainId    
+    -
+      name: StrainName
+      label: 'Strain Name'
+      selector: StrainName    
+    -
+      name: ProductCategoryName
+      label: 'Product Category Name'
+      selector: ProductCategoryName    
+    -
+      name: ProductCategoryType
+      label: 'Product Category Type- NOT Item Type, some random category they made up'
+      selector: Item/ProductCategoryType 
+
+  ids:
+    Id:
+      type: integer
+process:
+  field_item_id: Id
+  tid: Id
+  name: Name
+  description: Name
+  field_unit_of_weight: 
+    plugin: migration_lookup
+    migration: units
+    source: UnitOfMeasureName
+  field_item_type: 
+    plugin: migration_lookup
+    migration: item_type
+    source: ProductCategoryName
+  field_located:
+    plugin: entity_lookup
+    access_check: false
+    source: lic
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true  
+  field_strain: 
+    plugin: entity_generate
+    source: StrainId
+    access_check: false
+    value_key: tid
+    bundle_key: vid
+    bundle: strain
+    entity_type: taxonomy_term
+    ignore_case: true
+    values:
+      tid: StrainId
+      field_metrc_strain_id: StrainId
+      name: StrainName
+      field_genetics: entity_generate_notice
+      field_located: '@field_located'
+  field_approval_status: ApprovalStatus
+  field_approval_status_datetime: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: ApprovalStatusDateTime
+  field_is_used: IsUsed
+  status: IsUsed
+  field_thc_percent: UnitThcPercent
+  field_strain_id: StrainId
+  field_strainname: StrainName
+  field_product_category_name: ProductCategoryName 
+  field_product_category_type_not_: ProductCategoryType
+
+destination:
+  plugin: entity:taxonomy_term
+  default_bundle: item
+migration_dependencies: {}
+
+
+

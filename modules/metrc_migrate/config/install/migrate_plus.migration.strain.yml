@@ -1,0 +1,95 @@
+id: strain
+label: '4.a. Strains'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: metrc_http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  path: /strains/v1
+  by_type: default
+  statuses:
+    - active
+  item_selector: /
+    
+  fields:
+    -
+      name: Id
+      label: 'Id'
+      selector: Id
+    -
+      name: Name
+      label: 'Name'
+      selector: Name
+    -
+      name: ThcLevel
+      label: 'THC Level'
+      selector: ThcLevel
+    -
+      name: TestingStatus
+      label: 'Testing Status'
+      selector: TestingStatus
+    -
+      name: SativaPercentage
+      label: 'Sativa Percentage'
+      selector: SativaPercentage
+    -
+      name: IndicaPercentage
+      label: 'Indica Percentage'
+      selector: IndicaPercentage
+    -
+      name: IsUsed
+      label: 'Is Used'
+      selector: IsUsed
+    -
+      name: Genetics
+      label: 'Genetics'
+      selector: Genetics
+    -
+      name: CbdLevel
+      label: 'CBD Level'
+      selector: CbdLevel
+    -
+      name: UrlLicenseNumber
+      label: 'Facility License Number from URL'
+      selector: UrlLicenseNumber    
+  ids:
+    Name:
+      type: integer
+process:
+  vid:
+    plugin: default_value
+    default_value: strain
+  field_metrc_strain_id: Id
+  tid: Id
+  name: Name
+  description: Genetics
+  field_thc_level: ThcLevel
+  field_testing_status: TestingStatus
+  field_sativa_percentage: SativaPercentage
+  field_indica_percentage: IndicaPercentage
+  field_isused: IsUsed
+  field_genetics: Genetics
+  field_cbd_level: CbdLevel
+  field_located:
+    plugin: entity_lookup
+    access_check: false
+    source: UrlLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true
+
+destination:
+  plugin: entity:taxonomy_term
+migration_dependencies: {}
+

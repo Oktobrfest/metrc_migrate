@@ -1,0 +1,113 @@
+id: delivery
+label: '12. Delivery'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_deliveries
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: metrc_http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  constant1: ''
+  path: /transfers/v1
+  appends: 
+    - deliveries
+  
+  item_selector: /
+
+  fields:
+    -
+      name: Id
+      label: 'Delivery Id Key'
+      selector: Id
+    -
+      name: RecipientFacilityLicenseNumber
+      label: 'Recipient Facility License Number'
+      selector: RecipientFacilityLicenseNumber
+    -
+      name: RecipientFacilityName
+      label: 'Recipient Facility Name'
+      selector: RecipientFacilityName
+    -  
+      name: ShipmentTypeName 
+      label: 'Shipment Type Name'
+      selector: ShipmentTypeName
+    -
+      name: ShipmentTransactionType
+      label: 'Shipment Transaction Type'
+      selector: ShipmentTransactionType 
+    -
+      name: PlannedRoute
+      label: 'Planned Driving Route'
+      selector: PlannedRoute
+    -
+      name: DeliveryPackageCount
+      label: 'Delivery Package Count'
+      selector: DeliveryPackageCount
+    -
+      name: DeliveryReceivedPackageCount
+      label: 'Delivery Received Package Count'
+      selector: DeliveryReceivedPackageCount
+    -
+      name: ReceivedDateTime
+      label: 'Recieved Date and Time'
+      selector: ReceivedDateTime
+    -
+      name: RejectedPackagesReturned
+      label: 'Were Rejected Packages Returned'
+      selector: RejectedPackagesReturned
+    -
+      name: TransferId
+      label: 'Transfer Id'
+      selector: TransferId
+          
+  ids:
+    Id:
+      type: integer
+process:
+  nid: Id
+  title: RecipientFacilityName
+  field_recipient_license: RecipientFacilityLicenseNumber
+  field_shipment_type_name: ShipmentTypeName
+  field_shipment_transaction_type: ShipmentTransactionType
+  field_planned_route: PlannedRoute
+  field_delivery_package_count: DeliveryPackageCount
+  field_delivered_packages_count: DeliveryReceivedPackageCount
+  field_received_date_time: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: ReceivedDateTime
+  field_rejected_packages_returned: RejectedPackagesReturned
+  field_transfer_id: TransferId
+  field_transfer: 
+    plugin: entity_lookup
+    access_check: false
+    source: TransferId
+    value_key: nid
+    bundle_key: type
+    bundle: transfer
+    entity_type: node
+    ignore_case: true
+  field_recipient:
+    plugin: entity_lookup
+    access_check: false
+    source: RecipientFacilityLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true  
+
+destination:
+  plugin: entity:node
+  default_bundle: delivery
+migration_dependencies: {}

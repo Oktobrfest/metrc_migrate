@@ -1,0 +1,112 @@
+id: outgoing_transfers
+label: '10. Outgoing Transfers'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  # Specifies the http fetcher plugin.
+  data_fetcher_plugin: metrc_http
+  # Specifies the JSON parser plugin.
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+  
+  path: /transfers/v1
+  statuses: 
+    - outgoing
+  by_type: date
+  item_selector: /
+
+  fields:
+    -
+      name: Id
+      label: 'Transfer Id Key'
+      selector: Id
+    -
+      name: ManifestNumber
+      label: 'Manifest Number'
+      selector: ManifestNumber
+    -
+      name: ShipperFacilityLicenseNumber
+      label: 'Shipper Facility License Number'
+      selector: ShipperFacilityLicenseNumber
+    -
+      name: PackageCount
+      label: 'Package Count'
+      selector: PackageCount
+    -
+      name: ReceivedPackageCount
+      label: 'Received Package Count'
+      selector: ReceivedPackageCount
+    -
+      name: ContainsPlantPackage
+      label: 'Contains Plants in this transfer'
+      selector: ContainsPlantPackage
+    -
+      name: ContainsProductPackage
+      label: 'Contains Product Package'
+      selector: ContainsProductPackage
+    -
+      name: ContainsTestingSample
+      label: 'Contains Testing Sample'
+      selector: ContainsTestingSample
+    -
+      name: CreatedDateTime
+      label: 'Created Date and Time'
+      selector: CreatedDateTime
+    -
+      name: CreatedByUserName
+      label: 'Created By a User Named'
+      selector: CreatedByUserName
+    - 
+      name: LastModified
+      label: 'Last Modified Date and Time'
+      selector: LastModified
+  
+
+  ids:
+    Id:
+      type: integer
+process:
+  nid: Id
+  title: ManifestNumber
+  field_shipper_license_number: ShipperFacilityLicenseNumber
+  field_package_count: PackageCount
+  field_received_package_count: ReceivedPackageCount
+  field_contains_plant_package: ContainsPlantPackage
+  field_contains_product_package: ContainsProductPackage
+  field_contains_testing_sample: ContainsTestingSample
+  field_created_date_time: 
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: CreatedDateTime
+  field_created_by: CreatedByUserName
+  field_transfer_last_modified:
+    plugin: format_date
+    from_format: 'Y-m-d\TH:i:sP'
+    to_format: 'Y-m-d\TH:i:s'
+    from_timezone: 'America/Denver'
+    to_timezone: 'UTC'
+    source: LastModified
+  field_shipper:
+    plugin: entity_lookup
+    access_check: false
+    source: ShipperFacilityLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true  
+
+destination:
+  plugin: entity:node
+  default_bundle: transfer
+migration_dependencies: {}

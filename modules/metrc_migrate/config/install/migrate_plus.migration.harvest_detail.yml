@@ -1,0 +1,79 @@
+id: harvest_detail
+label: '7. Harvest Detail Nodes'
+migration_tags: 
+  - metrc
+migration_group: metrc
+source:
+  plugin: metrc_url2
+  data_fetcher_plugin: metrc_http
+  data_parser_plugin: metrc_json
+  authentication:
+    plugin: metrc_basic
+
+  headers:
+    Accept: 'application/json; charset=utf-8'
+    Content-Type: 'application/json'
+ 
+  path: /harvests/v1
+  by_type: date
+  statuses:
+    - active
+    - inactive
+    
+  item_selector: /
+  
+  fields:
+    -
+      name: Id
+      label: 'Harvest Id'
+      selector: Id
+    -
+      name: Name
+      label: 'Name'
+      selector: Name
+    -
+      name: UrlLicenseNumber
+      label: 'Facility License Number from URL'
+      selector: UrlLicenseNumber  
+
+  ids:
+    Id:
+      type: integer
+
+process:
+  nid:
+    -
+      plugin: skip_existing
+      source:  Id
+      entity_type: node
+    -      
+      plugin: get
+      source: Id
+  field_metrc_harvest_id: Id
+  title: Name
+  field_located:
+    plugin: entity_lookup
+    access_check: false
+    source: UrlLicenseNumber
+    value_key: field_license_number
+    bundle_key: type
+    bundle: customer
+    entity_type: node
+    ignore_case: true
+  field_harvest_referenced:
+    plugin: entity_lookup
+    access_check: false
+    source: Id
+    value_key: tid
+    bundle_key: vid
+    bundle: harvests
+    entity_type: taxonomy_term
+    ignore_case: true
+    
+destination:
+  plugin: entity:node
+  default_bundle: harvest_detail
+migration_dependencies:
+  required:
+    - harvests
+  optional: []

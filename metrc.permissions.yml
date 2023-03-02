@@ -1,0 +1,3 @@
+authorize metrc account:
+  title: 'Authorize metrc account'
+  description: "Authorize the site to access this user's personal metrc account."

@@ -1,0 +1,43 @@
+operations:
+  GetPosts:
+    httpMethod: "GET"
+    uri: "Packages"
+    summary: "Gets the available Packages. It's possible to define a limit and a sorting order."
+    parameters:
+      limit:
+        location: "query"
+        description: "The number of Packages to be retrieved."
+        type: "integer"
+        required: true
+        default: 5
+      sort:
+        location: "query"
+        description: "The sorting order."
+        type: "string"
+        required: true
+        default: "desc"
+    responseModel: "PackagesList"
+
+models:
+  PackagesList:
+    type: "array"
+    location: "json"
+    items:
+      "$ref": "Package"
+
+  Package:
+    type: "object"
+    location: "json"
+    properties:
+      userId:
+        location: "json"
+        type: "integer"
+      id:
+        location: "json"
+        type: "integer"
+      title:
+        location: "json"
+        type: "string"
+      text:
+        location: "json"
+        type: "string"
