@@ -19,7 +19,7 @@ source:
   path: /items/v1/categories
   by_type: default
   item_selector: /
-  lic: 403R-01160
+  lic: 403x-XXXXX
   
   constants:
     category: Category 
