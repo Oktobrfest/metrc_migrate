@@ -1,6 +1,6 @@
-# metrc
+# metrc- ﻿Metrc Track-and-Trace API Integration Module
 
-Use the metrc_migrate module instead of the views module.
+Use the metrc_migrate sub-module instead of the views module.
 
 ### metrc migrate module
 
