@@ -1,5 +1,5 @@
 id: item
-label: '5. Items (ie. DD- Flower, etc)'
+label: '5. Items (ie. OG Kush Flower, etc)'
 migration_tags: 
   - metrc
 migration_group: metrc
@@ -20,7 +20,7 @@ source:
     - active
 
   item_selector: /
-  lic: 403R-01160
+  lic: 403-XXXXX
 
   track_changes: true
   entity_generate_notice: 'Created by Migration: 5. Items->entity_generate plugin! Fill in leftover fields!'
